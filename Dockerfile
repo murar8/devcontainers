@@ -1,10 +1,10 @@
 ARG UBUNTU_VERSION
 FROM buildpack-deps:${UBUNTU_VERSION}-curl
 
-LABEL mantainer="Lorenzo Murarotto <lnzmrr@gmail.com>"
+LABEL maintainer="Lorenzo Murarotto <lnzmrr@gmail.com>"
 
 ARG SCRIPTS_RELEASE
-ARG USERNAME=vscode
+ARG USERNAME=vsUBUcode
 
 ARG SCRIPT_COMMON="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${SCRIPTS_RELEASE}/script-library/common-debian.sh"
 ARG INSTALL_ZSH="true"
