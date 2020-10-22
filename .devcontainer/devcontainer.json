@@ -1,0 +1,16 @@
+{
+  "name": "Ubuntu",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "code",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
+  "extensions": [
+    "ms-azuretools.vscode-docker"
+  ],
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/zsh",
+  },
+}
