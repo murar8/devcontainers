@@ -35,7 +35,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - run: echo "::set-output name=tag::${GITHUB_REF#refs/*/}"
         id: tag-name
 
       - run: echo "::set-output name=date::$(date --rfc-3339=seconds)"
@@ -51,14 +51,14 @@ jobs:
             SCRIPTS_RELEASE=${{ env.SCRIPTS_RELEASE }}
             UBUNTU_VERSION=${{ matrix.ubuntu-version }}
           tags: |
-            murar8/devcontainer-base:${{ matrix.ubuntu-version }}-latest
-            murar8/devcontainer-base:${{ matrix.ubuntu-version }}-${{ steps.tag-name.outputs.tag }}
-          labels: |
-            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.created=${{ steps.date.outputs.date }}
-            org.opencontainers.image.authors="Lorenzo Murarotto <lnzmrr@gmail.com>"
-            org.opencontainers.image.url="https://hub.docker.com/r/murar8/devcontainer-base"
+            ghcr.io/murar8/devcontainer-base:${{ matrix.ubuntu-version }}-latest
+            ghcr.io/murar8/devcontainer-base:${{ matrix.ubuntu-version }}-${{ steps.tag-name.outputs.tag }}
+          # labels: |
+          #   org.opencontainers.image.source=${{ github.event.repository.clone_url }}
+          #   org.opencontainers.image.revision=${{ github.sha }}
+          #   org.opencontainers.image.created=${{ steps.date.outputs.date }}
+          #   org.opencontainers.image.authors="Lorenzo Murarotto <lnzmrr@gmail.com>"
+          #   org.opencontainers.image.url="https://hub.docker.com/r/murar8/devcontainer-base"
   # update-description:
   #   runs-on: ubuntu-latest
   #   needs: release
