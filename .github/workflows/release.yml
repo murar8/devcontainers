@@ -1,6 +1,13 @@
 name: release
 
-on: { push: { branches: ["main"] } }
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+
+env:
+  DOCKERHUB_USERNAME: murar8
+  SCRIPTS_RELEASE: v0.146.0
 
 jobs:
   release:
@@ -8,23 +15,35 @@ jobs:
 
     strategy:
       matrix:
-        ubuntu-version: ["focal"]
+        ubuntu-version: ["bionic", "focal", "groovy"]
 
     steps:
+      - uses: actions/checkout@v2
+
       - uses: docker/setup-buildx-action@v1
+
       - uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: ${{ runner.os }}-buildx-
+
       - uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: actions/checkout@v2
+
+      - id: tag-name
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+
       - uses: docker/build-push-action@v2
         with:
           push: true
-          tags: murar8/devcontainer:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+          build-args: |
+            SCRIPTS_RELEASE=${{ env.SCRIPTS_RELEASE }}
+            UBUNTU_VERSION=${{ matrix.ubuntu-version }}
+          tags: |
+            murar8/devcontainer-base:${{ matrix.ubuntu-version }}-latest
+            murar8/devcontainer-base:${{ matrix.ubuntu-version }}-${{ steps.tag-name.outputs.tag }}

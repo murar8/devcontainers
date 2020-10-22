@@ -1,11 +1,12 @@
+ARG UBUNTU_VERSION
+FROM buildpack-deps:${UBUNTU_VERSION}-curl
 
-ARG TAG="focal"
-FROM buildpack-deps:${TAG}-curl
+LABEL mantainer="Lorenzo Murarotto <lnzmrr@gmail.com>"
 
-ARG RELEASE="v0.146.0"
+ARG SCRIPTS_RELEASE
 ARG USERNAME=vscode
 
-ARG SCRIPT_COMMON=https://raw.githubusercontent.com/microsoft/vscode-dev-containers/$RELEASE/script-library/common-debian.sh
+ARG SCRIPT_COMMON="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${SCRIPTS_RELEASE}/script-library/common-debian.sh"
 ARG INSTALL_ZSH="true"
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
@@ -17,7 +18,7 @@ RUN curl -sSL "${SCRIPT_COMMON}" \
   | bash /dev/stdin "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}" \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-ARG SCRIPT_DOCKER="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${RELEASE}/script-library/docker-debian.sh"
+ARG SCRIPT_DOCKER="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${SCRIPTS_RELEASE}/script-library/docker-debian.sh"
 ARG ENABLE_NONROOT_DOCKER="true"
 ARG SOURCE_SOCKET="/var/run/docker-host.sock"
 ARG TARGET_SOCKET="/var/run/docker.sock"
@@ -33,4 +34,5 @@ RUN mkdir -p /home/"${USERNAME}"/.zsh_history /home/"${USERNAME}"/.vscode-server
 ENV HISTFILE=/home/"${USERNAME}"/.zsh_history/zsh_history
 
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
+
 CMD [ "sleep", "infinity" ]
