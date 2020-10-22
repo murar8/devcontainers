@@ -53,7 +53,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
-            BASE_IMAGE_TYPE=${{ matrix.base-image-type }}
             BASE_IMAGE_TAG=${{ steps.tag.outputs.tag }}
           tags: |
             ${{ env.BASE_TAG }}-${{ matrix.container }}:${{ steps.tag.outputs.tag }}
