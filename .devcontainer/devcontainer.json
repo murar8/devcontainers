@@ -1,6 +1,6 @@
 {
   "name": "Ubuntu",
-  "image": "murar8/devcontainer-base:focal-latest",
+  "image": "ghcr.io/murar8/devcontainer-base:focal-latest",
   "containerUser": "vscode",
   "remoteUser": "vscode",
   "overrideCommand": false,

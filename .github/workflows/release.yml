@@ -53,12 +53,13 @@ jobs:
           tags: |
             ghcr.io/murar8/devcontainer-base:${{ matrix.ubuntu-version }}-latest
             ghcr.io/murar8/devcontainer-base:${{ matrix.ubuntu-version }}-${{ steps.tag-name.outputs.tag }}
-          # labels: |
-          #   org.opencontainers.image.source=${{ github.event.repository.clone_url }}
-          #   org.opencontainers.image.revision=${{ github.sha }}
-          #   org.opencontainers.image.created=${{ steps.date.outputs.date }}
-          #   org.opencontainers.image.authors="Lorenzo Murarotto <lnzmrr@gmail.com>"
-          #   org.opencontainers.image.url="https://hub.docker.com/r/murar8/devcontainer-base"
+          labels: |
+            org.opencontainers.image.created=${{ steps.date.outputs.date }}
+            org.opencontainers.image.authors="Lorenzo Murarotto <lnzmrr@gmail.com>"
+            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
+            org.opencontainers.image.version=${{ steps.tag-name.outputs.tag }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses="MIT"
   # update-description:
   #   runs-on: ubuntu-latest
   #   needs: release
