@@ -3,7 +3,6 @@ name: release
 on: { push: { branches: ["main"] } }
 
 env:
-  DOCKERHUB_USERNAME: murar8
   SCRIPTS_RELEASE: v0.146.0
 
 jobs:
