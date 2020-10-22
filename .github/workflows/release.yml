@@ -47,4 +47,11 @@ jobs:
             UBUNTU_VERSION=${{ matrix.ubuntu-version }}
           tags: |
             murar8/devcontainer-base:${{ matrix.ubuntu-version }}-latest
+            murar8/devcontainer-base:${{ matrix.ubuntu-version }}-latest
             murar8/devcontainer-base:${{ matrix.ubuntu-version }}-${{ steps.tag-name.outputs.tag }}
+
+      - uses: peter-evans/dockerhub-description@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: murar8/devcontainer-base
