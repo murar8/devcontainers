@@ -47,7 +47,7 @@ jobs:
             UBUNTU_VERSION=${{ matrix.ubuntu-version }}
           tags: |
             murar8/devcontainer-base:${{ matrix.ubuntu-version }}-latest
-            murar8/devcontainer-base:${{ matrix.ubuntu-version }}-latest
+            murar8/devcontainer-base:${{ matrix.ubuntu-version }}-${{ github.sha }}
             murar8/devcontainer-base:${{ matrix.ubuntu-version }}-${{ steps.tag-name.outputs.tag }}
 
       - uses: peter-evans/dockerhub-description@v2
