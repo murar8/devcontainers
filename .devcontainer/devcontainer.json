@@ -1,15 +1,23 @@
 {
   "name": "Ubuntu",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "code",
-  "workspaceFolder": "/workspace",
+  "image": "murar8/devcontainer-base:focal-latest",
+  "containerUser": "vscode",
   "remoteUser": "vscode",
-  "extensions": [
-    "ms-azuretools.vscode-docker"
+  "overrideCommand": false,
+  "runArgs": [
+    "--init"
+  ],
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind",
+    "source=ubuntu-zsh-history,target=/home/vscode/.zsh-history,type=volume",
+    "source=ubuntu-vscode-extensions,target=/home/vscode/.vscode-server/extensions,type=volume"
   ],
   "remoteEnv": {
     "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   },
+  "extensions": [
+    "ms-azuretools.vscode-docker"
+  ],
   "settings": {
     "terminal.integrated.shell.linux": "/bin/zsh",
   },
