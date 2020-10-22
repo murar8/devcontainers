@@ -34,5 +34,4 @@ RUN mkdir -p /home/"${USERNAME}"/.zsh_history /home/"${USERNAME}"/.vscode-server
 ENV HISTFILE=/home/"${USERNAME}"/.zsh_history/zsh_history
 
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
-
 CMD [ "sleep", "infinity" ]

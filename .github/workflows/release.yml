@@ -65,7 +65,7 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ matrix.ubuntu-version }}-${{ steps.tag-name.outputs.version }}
           labels: |
             org.opencontainers.image.created=${{ steps.date.outputs.date }}
-            org.opencontainers.image.authors="Lorenzo Murarotto <lnzmrr@gmail.com>"
-            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
+            org.opencontainers.image.authors=Lorenzo Murarotto <lnzmrr@gmail.com>
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.version=${{ steps.tag-name.outputs.version }}
-            org.opencontainers.image.licenses="MIT"
+            org.opencontainers.image.licenses=MIT
