@@ -39,7 +39,14 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - id: create-env
-        run: .github/scripts/create-matrix.sh
+        run: >
+          .github/scripts/create-matrix.sh
+          ${{ github.sha }}
+          ${{ github.ref }}
+          ${{ github.repository }}
+          ${{ github.repository_owner }}
+          ${{ matrix.base-image }}
+          ${{ matrix.image }}
 
       - uses: docker/build-push-action@v2
         with:
