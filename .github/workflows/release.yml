@@ -40,7 +40,7 @@ jobs:
 
       - id: create-env
         run: >
-          .github/scripts/create-matrix.sh
+          .github/scripts/create-env.sh
           ${{ github.sha }}
           ${{ github.ref }}
           ${{ github.repository }}
