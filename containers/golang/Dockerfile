@@ -9,10 +9,11 @@ FROM ghcr.io/murar8/devcontainer-${BASE_IMAGE_TYPE}:${BASE_IMAGE_TAG}
 ARG TARGET_GO_VERSION="latest"
 ARG TARGET_GOROOT="/usr/local/go"
 ARG TARGET_GOPATH="/go"
+ARG USERNAME="vscode"
 ARG UPDATE_RC="true"
 ARG INSTALL_GO_TOOLS="true"
 
 RUN echo "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/master/script-library/go-debian.sh" \
     | xargs curl -sSL \
-    | bash /dev/stdin "${TARGET_GO_VERSION}" "${TARGET_GOROOT}" "${TARGET_GOPATH}" "${UPDATE_RC}" "${INSTALL_GO_TOOLS}" \
+    | bash /dev/stdin "${TARGET_GO_VERSION}" "${TARGET_GOROOT}" "${TARGET_GOPATH}" "${USERNAME}" "${UPDATE_RC}" "${INSTALL_GO_TOOLS}" \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
