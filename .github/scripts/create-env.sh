@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+#
+# create-env.sh
+#
+# DESCRIPTION: This file has the purpose of calculating the input parameters for docker build.
+#
+# USAGE: create-env.sh <GITHUB_SHA> <GITHUB_REF> <GITHUB_REPOSITORY> <GITHUB_REPOSITORY_OWNER> <BASE_IMAGE> <IMAGE>
+#
+# OUTPUT DESCRIPTION:
+#   file: the path to the Dockerfile of the current image.
+#   tags: the tags to be added to the docker image (latest, nightly, ...).
+#   labels: the labels to be added to the docker image.
+#   build-args: the build arguments to be passed to the docker image.
 
 set -e
 
@@ -9,6 +21,7 @@ GITHUB_REPOSITORY_OWNER=$4
 BASE_IMAGE=$5
 IMAGE=$6
 
+# Some characters need to be escaped for set-output to work.
 function set-output() {
     output="$2"
 
@@ -19,6 +32,8 @@ function set-output() {
     echo "::set-output name=$1::$output"
 }
 
+# ******** file ********
+
 if [[ ! -z $IMAGE ]]; then
     FILE="./containers/$IMAGE/Dockerfile"
 else
@@ -26,6 +41,8 @@ else
 fi
 
 set-output "file" "$FILE"
+
+# ******** tags ********
 
 REF=$(echo $GITHUB_REF | sed -s 's/refs\/.\+\///')
 
@@ -48,23 +65,23 @@ $BASE_TAG:$VERSION
 
 set-output "tags" "$TAGS"
 
+# ******** labels ********
+
 LABELS="
 org.opencontainers.image.authors=Lorenzo Murarotto <lnzmrr@gmail.com>
 org.opencontainers.image.licenses=MIT
 org.opencontainers.image.created=$(date --rfc-3339=seconds)
 org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY
-org.opencontainers.image.version=$VERSION"
+org.opencontainers.image.version=$VERSION
+"
 
 set-output "labels" "$LABELS"
 
-# if [[ ! -z $IMAGE ]]; then
-#     BASE_IMAGE_TYPE=$BASE_IMAGE
-#     BASE_IMAGE_TAG=$TAG
-# else
-#     BASE_IMAGE_TYPE=$BASE_IMAGE
-#     BASE_IMAGE_TAG=$TAG
-# fi
+# ******** build-args ********
 
-BUILD_ARGS="BASE_IMAGE_TYPE=$BASE_IMAGE BASE_IMAGE_TAG=$TAG"
+BUILD_ARGS="
+BASE_IMAGE_TYPE=$BASE_IMAGE
+BASE_IMAGE_TAG=$TAG
+"
 
 set-output "build-args" "$BUILD_ARGS"
