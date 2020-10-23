@@ -2,15 +2,14 @@
 #
 # create-env.sh
 #
-# DESCRIPTION: This file has the purpose of calculating the input parameters for docker build.
+# DESCRIPTION: Calculate the input parameters for docker the docker build action.
 #
-# USAGE: create-env.sh <GITHUB_SHA> <GITHUB_REF> <GITHUB_REPOSITORY> <GITHUB_REPOSITORY_OWNER> <BASE_IMAGE> <IMAGE>
+# USAGE: ./create-env.sh <GITHUB_SHA> <GITHUB_REF> <GITHUB_REPOSITORY> <GITHUB_REPOSITORY_OWNER> <BASE_IMAGE> <IMAGE>
 #
-# OUTPUT DESCRIPTION:
-#   file: the path to the Dockerfile of the current image.
-#   tags: the tags to be added to the docker image (latest, nightly, ...).
-#   labels: the labels to be added to the docker image.
-#   build-args: the build arguments to be passed to the docker image.
+# OUTPUTS:  file: the path to the Dockerfile of the current image.
+#           tags: the tags to be added to the docker image (latest, nightly, ...).
+#           labels: the labels to be added to the docker image.
+#           build-args: the build arguments to be passed to the docker image.
 
 set -e
 
@@ -21,7 +20,6 @@ GITHUB_REPOSITORY_OWNER=$4
 BASE_IMAGE=$5
 IMAGE=$6
 
-# Some characters need to be escaped for set-output to work.
 function set-output() {
     output="$2"
 

@@ -14,7 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: create-matrix
-        run: .github/scripts/create-matrix.sh
+        run: |
+          source config.sh
+          .github/scripts/create-matrix.sh
 
   release:
     runs-on: ubuntu-latest
