@@ -22,8 +22,8 @@ RUN echo "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/mast
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Store zsh history file inside a folder so it can be mounted as a volume.
-RUN echo "export HISTFILE=/home/${USERNAME}/.zsh_history/zsh_history" > "/home/${USERNAME}/.zprofile" \
-    && chown -R "${USERNAME}":"${USERNAME}" "/home/${USERNAME}/.zprofile"
+RUN echo "export HISTFILE=/home/${USERNAME}/.zsh_history/zsh_history" >> "/home/${USERNAME}/.zshenv" \
+    && chown -R "${USERNAME}":"${USERNAME}" "/home/${USERNAME}/.zshenv"
 
 # Creates various mountpoints with the correct permissions
 # to make it easier to mount them as voulmes as a non-root user.
