@@ -1,10 +1,19 @@
 # devcontainers
+
 ## Description
 This repository contains my development container definitions for VSCode Remote Development.
-## Features
+
+
+## Base images
+
+### Ubuntu
 - Common command-line utilities and zsh preinstalled.
 - Set up with a non-root user named 'vscode'.
-- Forward the docker socket to use docker within the container.
-- Persist zsh history and VSCode extensions on container rebuild.
+- Mountpoints created for persisting zsh history and VSCode extensions folder on container rebuild.
+
+### Docker
+- Same as above.
+-
+
+
 ## Usage
-TODO

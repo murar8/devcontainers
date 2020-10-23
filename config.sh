@@ -1,2 +1,2 @@
-BASE_IMAGES="ubuntu docker"
-IMAGES="golang"
+export BASE_IMAGES="ubuntu docker"
+export IMAGES="golang"
