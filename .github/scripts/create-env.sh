@@ -29,27 +29,18 @@ fi
 
 BASE_TAG="ghcr.io/$GITHUB_REPOSITORY_OWNER/devcontainer-$BASE_IMAGE"
 
-if [[ ! -z $IMAGE ]]; then
-    TAGS="
-    $BASE_TAG-$IMAGE:$TAG
-    $BASE_TAG-$IMAGE:$VERSION
-    "
-else
-    TAGS="
-    $BASE_TAG:$TAG
-    $BASE_TAG:$VERSION
-    "
-fi
+if [[ ! -z $IMAGE ]]; then BASE_TAG=$BASE_TAG-$IMAGE; fi
+
+TAGS="$BASE_TAG:$TAG $BASE_TAG:$VERSION"
 
 echo "::set-output name=tags::$TAGS"
 
-LABELS="
-org.opencontainers.image.authors=Lorenzo Murarotto <lnzmrr@gmail.com>
-org.opencontainers.image.licenses=MIT
-org.opencontainers.image.created=$(date --rfc-3339=seconds)
-org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY
-org.opencontainers.image.version=$VERSION
-"
+LABELS="\
+org.opencontainers.image.authors=Lorenzo Murarotto <lnzmrr@gmail.com> \
+org.opencontainers.image.licenses=MIT \
+org.opencontainers.image.created=$(date --rfc-3339=seconds) \
+org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY \
+org.opencontainers.image.version=$VERSION"
 
 echo "::set-output name=labels::$LABELS"
 
@@ -61,9 +52,6 @@ echo "::set-output name=labels::$LABELS"
 #     BASE_IMAGE_TAG=$TAG
 # fi
 
-BUILD_ARGS="
-BASE_IMAGE_TYPE=$BASE_IMAGE
-BASE_IMAGE_TAG=$TAG
-"
+BUILD_ARGS="BASE_IMAGE_TYPE=$BASE_IMAGE BASE_IMAGE_TAG=$TAG"
 
 echo "::set-output name=build-args::$BUILD_ARGS"
