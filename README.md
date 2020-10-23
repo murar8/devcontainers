@@ -90,3 +90,22 @@ To use this image add the following to `devcontainer.json`:
 ```
 
 For more information see https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/go.md
+
+## Adding a new definition
+
+Base Image vs Image: TODO
+
+- ### Create the Dockerfile in containers/[IMAGE NAME]/Dockerfile.
+
+  If the image is not a base image the format should start with:
+
+  ```Dockefile
+    ARG BASE_IMAGE_TYPE
+    ARG BASE_IMAGE_TAG
+    FROM ghcr.io/murar8/devcontainer-${BASE_IMAGE_TYPE}:${BASE_IMAGE_TAG}
+  ```
+
+- ### Add the image name in config.sh to either BASE_IMAGES or IMAGES.
+
+  **Note**: If an image depends on another one it should be specified AFTER the parent in the config
+  so the parent image will be built first.
