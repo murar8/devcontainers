@@ -1,0 +1,4 @@
+ARG BASE_IMAGE_TYPE
+ARG BASE_IMAGE_TAG
+
+FROM ghcr.io/murar8/devcontainer-${BASE_IMAGE_TYPE}:${BASE_IMAGE_TAG}

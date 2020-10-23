@@ -6,13 +6,20 @@ on:
     tags: ["v*"]
 
 jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs: { matrix: "${{ steps.create-matrix.outputs.matrix }}" }
+    steps:
+      - uses: actions/checkout@v2
+      - id: create-matrix
+        run: .github/scripts/create-matrix.sh
+
   release-base-images:
     runs-on: ubuntu-latest
-
+    needs: create-matrix
     strategy:
       max-parallel: 1
-      matrix:
-        container: ["ubuntu", "docker"]
+      matrix: ${{fromJson(needs.create-matrix.outputs.matrix)}}
 
     steps:
       - uses: actions/checkout@v2
@@ -31,35 +38,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - id: tag
-        run: |
-          if [[ "${GITHUB_REF#refs/*/}" == "main" ]]; then
-            echo "::set-output name=tag::nightly"
-            echo "::set-output name=version::${GITHUB_SHA}"
-          else
-            echo "::set-output name=tag::latest"
-            echo "::set-output name=version::${GITHUB_REF#refs/*/}"
-          fi
-
-      - id: date
-        run: echo "::set-output name=date::$(date --rfc-3339=seconds)"
+      - id: create-env
+        run: .github/scripts/create-matrix.sh
 
       - uses: docker/build-push-action@v2
-        env:
-          BASE_TAG: ghcr.io/${{ github.repository_owner }}/devcontainer
         with:
           push: true
-          file: ./containers-base/${{ matrix.container }}/Dockerfile
+          file: ${{ steps.create-env.outputs.file }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-          build-args: |
-            BASE_IMAGE_TAG=${{ steps.tag.outputs.tag }}
-          tags: |
-            ${{ env.BASE_TAG }}-${{ matrix.container }}:${{ steps.tag.outputs.tag }}
-            ${{ env.BASE_TAG }}-${{ matrix.container }}:${{ steps.tag.outputs.version }}
-          labels: |
-            org.opencontainers.image.created=${{ steps.date.outputs.date }}
-            org.opencontainers.image.authors=Lorenzo Murarotto <lnzmrr@gmail.com>
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.version=${{ steps.tag.outputs.version }}
-            org.opencontainers.image.licenses=MIT
+          build-args: ${{ steps.create-env.outputs.build-args }}
+          tags: ${{ steps.create-env.outputs.tags }}
+          labels: ${{ steps.create-env.outputs.labels }}

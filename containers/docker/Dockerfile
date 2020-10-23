@@ -4,7 +4,7 @@ FROM ghcr.io/murar8/devcontainer-ubuntu:${BASE_IMAGE_TAG}
 # Adds the Docker CLI to a container along with a script to enable using a forwarded Docker socket within a container to run Docker commands.
 # See https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/docker.md
 
-ARG USERNAME=vscode
+ARG USERNAME="vscode"
 ARG ENABLE_NONROOT_DOCKER="true"
 ARG SOURCE_SOCKET="/var/run/docker-host.sock"
 ARG TARGET_SOCKET="/var/run/docker.sock"
