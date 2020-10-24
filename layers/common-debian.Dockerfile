@@ -1,10 +1,6 @@
-FROM ubuntu:latest
+ARG BASE_IMAGE
 
-# Install curl.
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-get update  \
-    && apt-get -y install --no-install-recommends curl ca-certificates \
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+FROM ${BASE_IMAGE}
 
 # Installs a set of common command line utilities, Oh My Bash!, Oh My Zsh!, and sets up a non-root user.
 # See https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/common.md
@@ -16,12 +12,13 @@ ARG USER_GID="${USER_UID}"
 ARG UPGRADE_PACKAGES="true"
 ARG INSTALL_OH_MYS="false"
 
-RUN echo "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/master/script-library/common-debian.sh" \
-    | xargs curl -sSL \
-    | bash /dev/stdin "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}" \
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+COPY ./external-build-scripts/ ./build-scripts/ /tmp/build-scripts/
+
+RUN /tmp/build-scripts/run-script.sh common-debian "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}"
 
 # Creates the vscode extensions folder with the correct permissions
 # to make it easier to mount them as voulmes as a non-root user.
 RUN mkdir -p "/home/${USERNAME}/.vscode-server/extensions" \
     && chown -R "${USERNAME}":"${USERNAME}" "/home/${USERNAME}/.vscode-server"
+
+ARG BASE_IMAGE_TAG

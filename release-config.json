@@ -1,0 +1,22 @@
+[
+  {
+    "name": "ubuntu",
+    "base": "ubuntu:latest",
+    "layers": ["common-debian"]
+  },
+  {
+    "name": "docker",
+    "base": "ubuntu:latest",
+    "layers": ["common-debian", "docker-debian"]
+  },
+  {
+    "name": "ubuntu-golang",
+    "base": "ubuntu:latest",
+    "layers": ["common-debian", "docker-debian", "go-debian"]
+  },
+  {
+    "name": "docker-golang",
+    "base": "ubuntu:latest",
+    "layers": ["common-debian", "docker-debian", "go-debian"]
+  }
+]
