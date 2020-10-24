@@ -21,11 +21,7 @@ RUN echo "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/mast
     | bash /dev/stdin "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}" \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Store zsh history file inside a folder so it can be mounted as a volume.
-RUN echo "export HISTFILE=/home/${USERNAME}/.zsh_history/zsh_history" >> "/home/${USERNAME}/.zshenv" \
-    && chown -R "${USERNAME}":"${USERNAME}" "/home/${USERNAME}/.zshenv"
-
-# Creates various mountpoints with the correct permissions
+# Creates the vscode extensions folder with the correct permissions
 # to make it easier to mount them as voulmes as a non-root user.
-RUN mkdir -p "/home/${USERNAME}/.zsh_history" "/home/${USERNAME}/.vscode-server/extensions" \
-    && chown -R "${USERNAME}":"${USERNAME}" "/home/${USERNAME}/.zsh_history" "/home/${USERNAME}/.vscode-server"
+RUN mkdir -p "/home/${USERNAME}/.vscode-server/extensions" \
+    && chown -R "${USERNAME}":"${USERNAME}" "/home/${USERNAME}/.vscode-server"

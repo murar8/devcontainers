@@ -12,14 +12,13 @@ Usage: `ghcr.io/murar8/devcontainer-[BASE IMAGE NAME]:latest`
 
 - Common command-line utilities and zsh preinstalled.
 - Set up with a non-root user named 'vscode'.
-- Mountpoints created for persisting zsh history and VSCode extensions folder on container rebuild.
+- Mountpoint created for persisting VSCode extensions folder on container rebuild.
 
-To enable persistence add the following to `devcontainer.json`:
+To persist the extension folder on rebuild add the following to `devcontainer.json`:
 
 ```json
 {
   "mounts": [
-    "source=ubuntu-zsh-history,target=/home/vscode/.zsh-history,type=volume",
     "source=ubuntu-vscode-extensions,target=/home/vscode/.vscode-server/extensions,type=volume"
   ]
 }
@@ -37,7 +36,6 @@ For more information see https://github.com/microsoft/vscode-dev-containers/blob
 
 ### docker
 
-- Same as above.
 - Forward the Docker socket to allow the usage of docker within a container.
 
 To use this image add the following to `devcontainer.json`:

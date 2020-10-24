@@ -1,4 +1,5 @@
 ARG BASE_IMAGE_TAG
+
 FROM ghcr.io/murar8/devcontainer-ubuntu:${BASE_IMAGE_TAG}
 
 # Adds the Docker CLI to a container along with a script to enable using a forwarded Docker socket within a container to run Docker commands.
