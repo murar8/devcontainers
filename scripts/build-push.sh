@@ -1,29 +1,28 @@
 #!/usr/bin/env bash
 #
 # Build a docker image composed of the provided layers and push it to currently logged in registry.
+# Note that push and cache functionality are only available when using buildx.
 #
 # Arguments:
 #
-# --image-base    *     Name of the base image.
-# --image-name    *     Name of the resulting image.
-# --image-layers  *     Comma separated list of layers.
-# --image-tags          Comma separated list of tags.
-# --image-labels        Comma separated list of labels.
+# --image-base    [ Required ]      Name of the base image.
+# --image-name    [ Required ]      Name of the resulting image.
+# --image-layers  [ Required ]      Comma separated list of layers.
+# --image-tags    ""                Comma separated list of tags.
+# --image-labels  ""                Comma separated list of labels.
 #
 # Buildx arguments:
-# --use-buildx          Build images with buildx.
-# --cache-from          External cache sources.
-# --cache-to            Cache export destinations.
-# --push                Push the images to the registry, default false.
+# --use-Buildx    false             Build images with buildx.
+# --push          false             Push the images to the registry.
+# --cache-from    ""                External cache sources.
+# --cache-to      ""                Cache export destinations.
 #
 
 set -e
 
 ROOT_PATH="$(readlink -f $(dirname $0)/..)"
-LAYERS_PATH="$ROOT_PATH/layers"
 
-USE_BUILDX="false"
-PUSH="false"
+LAYERS_PATH="$ROOT_PATH/layers"
 
 for i in "$@"; do
   case $i in
@@ -53,8 +52,16 @@ for i in "$@"; do
     unset 'IMAGE_LABELS[-1]'
     shift
     ;;
+  --use-buildx=*)
+    USE_BUILDX="${i#*=}"
+    shift
+    ;;
   --use-buildx)
     USE_BUILDX="true"
+    shift
+    ;;
+  --push=*)
+    PUSH="${i#*=}"
     shift
     ;;
   --push)
