@@ -21,7 +21,7 @@
   },
   {
     "name": "docker-python",
-    "base": "ubuntu:latest",
-    "layers": ["common-debian", "docker-debian", "python-debian"]
+    "base": "python:buster",
+    "layers": ["common-debian", "docker-debian"]
   }
 ]
