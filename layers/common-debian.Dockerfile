@@ -12,13 +12,17 @@ ARG USER_GID="${USER_UID}"
 ARG UPGRADE_PACKAGES="true"
 ARG INSTALL_OH_MYS="false"
 
-COPY ./external-build-scripts/ ./build-scripts/ /tmp/build-scripts/
+COPY ./external-build-scripts/ /tmp/build-scripts/
 
-RUN /tmp/build-scripts/run-script.sh common-debian "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}"
+RUN /tmp/build-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}" \
+  && export DEBIAN_FRONTEND="noninteractive" \
+  && apt-get autoremove -y \
+  && apt-get clean -y \
+  && rm -rf '/var/lib/apt/lists/*' '/tmp/build-scripts/'
 
 # Creates the vscode extensions folder with the correct permissions
 # to make it easier to mount them as voulmes as a non-root user.
 RUN mkdir -p "/home/${USERNAME}/.vscode-server/extensions" \
-    && chown -R "${USERNAME}":"${USERNAME}" "/home/${USERNAME}/.vscode-server"
+  && chown -R "${USERNAME}":"${USERNAME}" "/home/${USERNAME}/.vscode-server"
 
 ARG BASE_IMAGE_TAG

@@ -10,14 +10,20 @@
 # --image-tags          Comma separated list of tags.
 # --image-labels        Comma separated list of labels.
 #
+# Buildx arguments:
+# --use-buildx          Build images with buildx.
 # --cache-from          External cache sources.
 # --cache-to            Cache export destinations.
+# --push                Push the images to the registry, default false.
 #
 
 set -e
 
-ROOT_DIR="$(readlink -f $(dirname $0)/../..)"
-LAYERS_PATH="$ROOT_DIR/layers"
+ROOT_PATH="$(readlink -f $(dirname $0)/..)"
+LAYERS_PATH="$ROOT_PATH/layers"
+
+USE_BUILDX="false"
+PUSH="false"
 
 for i in "$@"; do
   case $i in
@@ -47,6 +53,14 @@ for i in "$@"; do
     unset 'IMAGE_LABELS[-1]'
     shift
     ;;
+  --use-buildx)
+    USE_BUILDX="true"
+    shift
+    ;;
+  --push)
+    PUSH="true"
+    shift
+    ;;
   --cache-from=*)
     CACHE_FROM="${i#*=}"
     shift
@@ -74,11 +88,15 @@ check $LAYERS
 check $IMAGE_NAME
 
 echo
-echo "Base image:   $BASE_IMAGE"
-echo "Image name:   $IMAGE_NAME"
-echo "Layers:       ${LAYERS[@]}"
-echo "Image tags:   ${IMAGE_TAGS[@]}"
-echo "Image labels: ${IMAGE_LABELS[@]}"
+echo "Base image:         $BASE_IMAGE"
+echo "Image name:         $IMAGE_NAME"
+echo "Layers:             ${LAYERS[@]}"
+echo "Image tags:         ${IMAGE_TAGS[@]}"
+echo "Image labels:       ${IMAGE_LABELS[@]}"
+echo "Use buildx:         ${USE_BUILDX}"
+echo "Push to registry:   ${PUSH}"
+echo "Cache source:       ${CACHE_FROM}"
+echo "Cache destination:  ${CACHE_TO}"
 
 for layer in ${LAYERS[@]}; do
   file="$LAYERS_PATH/$layer.Dockerfile"
@@ -100,15 +118,26 @@ for layer in ${LAYERS[@]}; do
   echo "Adding layer '$layer' to '$last_tag'."
   echo
 
-  docker buildx build \
-    --file="$file" \
-    --build-arg="BASE_IMAGE=$last_tag" \
-    --cache-from="$CACHE_FROM" \
-    --cache-to="$CACHE_TO" \
-    --push="true" \
-    "${IMAGE_LABELS[@]/#/--label=}" \
-    "${tags[@]/#/--tag=}" \
-    "$ROOT_DIR"
+  args=(
+    "$ROOT_PATH"
+    "--file=$file"
+    "--build-arg=BASE_IMAGE=$last_tag"
+    "${IMAGE_LABELS[@]/#/--label=}"
+    "${tags[@]/#/--tag=}"
+  )
+
+  if [ "$USE_BUILDX" = true ]; then
+    build_cmd="docker buildx build"
+    args+=(
+      "--cache-from=$CACHE_FROM"
+      "--cache-to=$CACHE_TO"
+      "--push=$PUSH"
+    )
+  else
+    build_cmd="docker build"
+  fi
+
+  $build_cmd "${args[@]}"
 
   last_tag=${tags[0]}
 done

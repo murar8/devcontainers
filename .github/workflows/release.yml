@@ -48,11 +48,13 @@ jobs:
           --github-repo="${{ github.repository }}"
 
       - run: >
-          .github/scripts/build-push.sh
+          scripts/build-push.sh
           --image-base="${{ matrix.base }}"
           --image-name="$IMAGE_NAME"
           --image-layers="${{ join(matrix.layers, ',') }}"
           --image-tags="${{ steps.create-metadata.outputs.tags }}"
           --image-labels="${{ steps.create-metadata.outputs.labels }}"
+          --use-buildx
+          --push
           --cache-from="type=local,src=/tmp/.buildx-cache"
           --cache-to="type=local,dest=/tmp/.buildx-cache"

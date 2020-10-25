@@ -12,6 +12,10 @@ ARG USERNAME="vscode"
 ARG UPDATE_RC="true"
 ARG INSTALL_GO_TOOLS="true"
 
-COPY ./external-build-scripts/ ./build-scripts/ /tmp/build-scripts/
+COPY ./external-build-scripts/ /tmp/build-scripts/
 
-RUN /tmp/build-scripts/run-script.sh go-debian "${TARGET_GO_VERSION}" "${TARGET_GOROOT}" "${TARGET_GOPATH}" "${USERNAME}" "${UPDATE_RC}" "${INSTALL_GO_TOOLS}"
+RUN /tmp/build-scripts/go-debian.sh "${TARGET_GO_VERSION}" "${TARGET_GOROOT}" "${TARGET_GOPATH}" "${USERNAME}" "${UPDATE_RC}" "${INSTALL_GO_TOOLS}" \
+  && export DEBIAN_FRONTEND="noninteractive" \
+  && apt-get autoremove -y \
+  && apt-get clean -y \
+  && rm -rf '/var/lib/apt/lists/*' '/tmp/build-scripts/'
