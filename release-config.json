@@ -18,5 +18,10 @@
     "name": "docker-golang",
     "base": "ubuntu:latest",
     "layers": ["common-debian", "docker-debian", "go-debian"]
+  },
+  {
+    "name": "docker-python",
+    "base": "ubuntu:latest",
+    "layers": ["common-debian", "docker-debian", "python-debian"]
   }
 ]
