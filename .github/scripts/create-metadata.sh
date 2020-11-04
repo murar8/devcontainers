@@ -62,15 +62,9 @@ else
   VERSION="$REF"
 fi
 
-echo "::set-output name=tags::$TAG,$VERSION"
+echo "::set-output name=tags::\"$TAG\" \"$VERSION\""
 
 # ******** labels ********
-
-join() {
-  local IFS="$1"
-  shift
-  echo "$*"
-}
 
 LABELS=(
   "org.opencontainers.image.authors=Lorenzo Murarotto <lnzmrr@gmail.com>"
@@ -80,9 +74,8 @@ LABELS=(
   "org.opencontainers.image.version=$VERSION"
 )
 
-LABELS=$(
-  IFS=,
-  echo "${LABELS[*]}"
-)
+for ((i = 0; i < ${#LABELS[@]}; i++)); do
+  LABELS[$i]=\"${LABELS[$i]}\"
+done
 
-echo "::set-output name=labels::${LABELS}"
+echo "::set-output name=labels::${LABELS[@]}"
