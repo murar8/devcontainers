@@ -2,6 +2,8 @@ ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE}
 
+COPY ./build-scripts/ /tmp/build-scripts/
+
 # Installs Python, PIPX, and common Python utilities.
 # https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/python.md
 
@@ -12,9 +14,8 @@ ARG USERNAME="automatic"
 ARG UPDATE_RC="true"
 ARG INSTALL_PYTHON_TOOLS="true"
 
-COPY ./external-build-scripts/ /tmp/build-scripts/
-
-RUN /tmp/build-scripts/python-debian.sh "${PYTHON_VERSION}" "${PYTHON_INSTALL_PATH}" "${PIPX_HOME}" "${USERNAME}" "${UPDATE_RC}" "${INSTALL_PYTHON_TOOLS}" \
+RUN /tmp/build-scripts/run-vscode-script.sh python-debian.sh master \
+  "${PYTHON_VERSION}" "${PYTHON_INSTALL_PATH}" "${PIPX_HOME}" "${USERNAME}" "${UPDATE_RC}" "${INSTALL_PYTHON_TOOLS}" \
   && export DEBIAN_FRONTEND="noninteractive" \
   && apt-get autoremove -y \
   && apt-get clean -y \

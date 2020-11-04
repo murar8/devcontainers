@@ -2,6 +2,8 @@ ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE}
 
+COPY ./build-scripts/ /tmp/build-scripts/
+
 # Installs a set of common command line utilities, Oh My Bash!, Oh My Zsh!, and sets up a non-root user.
 # See https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/common.md
 
@@ -12,9 +14,9 @@ ARG USER_GID="${USER_UID}"
 ARG UPGRADE_PACKAGES="true"
 ARG INSTALL_OH_MYS="false"
 
-COPY ./external-build-scripts/ /tmp/build-scripts/
 
-RUN /tmp/build-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}" \
+RUN /tmp/build-scripts/run-vscode-script.sh common-debian.sh master \
+  "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}" \
   && export DEBIAN_FRONTEND="noninteractive" \
   && apt-get autoremove -y \
   && apt-get clean -y \

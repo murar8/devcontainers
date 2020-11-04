@@ -1,150 +1,134 @@
 #!/usr/bin/env bash
-#
-# Build a docker image composed of the provided layers and push it to currently logged in registry.
-# Note that push and cache functionality are only available when using buildx.
-#
-# Arguments:
-#
-# --image-base    [ Required ]      Name of the base image.
-# --image-name    [ Required ]      Name of the resulting image.
-# --image-layers  [ Required ]      Comma separated list of layers.
-# --image-tags    ""                Comma separated list of tags.
-# --image-labels  ""                Comma separated list of labels.
-#
-# Buildx arguments:
-# --use-Buildx    false             Build images with buildx.
-# --push          false             Push the images to the registry.
-# --cache-from    ""                External cache sources.
-# --cache-to      ""                Cache export destinations.
-#
 
 set -e
 
-ROOT_PATH="$(readlink -f $(dirname $0)/..)"
-
-LAYERS_PATH="$ROOT_PATH/layers"
-
-for i in "$@"; do
-  case $i in
-  --image-base=*)
-    BASE_IMAGE="${i#*=}"
-    shift
-    ;;
-  --image-name=*)
-    IMAGE_NAME="${i#*=}"
-    shift
-    ;;
-  --image-layers=*)
-    LAYERS="${i#*=}"
-    readarray -td, LAYERS <<<"${i#*=},"
-    unset 'LAYERS[-1]'
-    shift
-    ;;
-  --image-tags=*)
-    IMAGE_TAGS+=("${i#*=}")
-    readarray -td, IMAGE_TAGS <<<"${i#*=},"
-    unset 'IMAGE_TAGS[-1]'
-    shift
-    ;;
-  --image-labels=*)
-    IMAGE_LABELS+=("${i#*=}")
-    readarray -td, IMAGE_LABELS <<<"${i#*=},"
-    unset 'IMAGE_LABELS[-1]'
-    shift
-    ;;
-  --use-buildx=*)
-    USE_BUILDX="${i#*=}"
-    shift
-    ;;
-  --use-buildx)
-    USE_BUILDX="true"
-    shift
-    ;;
-  --push=*)
-    PUSH="${i#*=}"
-    shift
-    ;;
-  --push)
-    PUSH="true"
-    shift
-    ;;
-  --cache-from=*)
-    CACHE_FROM="${i#*=}"
-    shift
-    ;;
-  --cache-to=*)
-    CACHE_TO="${i#*=}"
-    shift
-    ;;
-  *)
-    echo "Unknown option: ${i}"
-    exit 1
-    ;;
-  esac
-done
-
-check() {
-  if [ -z $1 ]; then
-    echo "Missing required argument."
-    exit 1
-  fi
+function usage() {
+  echo
+  echo "Build a docker image composed of the provided layers and optionally push it to the supplied registry."
+  echo
+  echo "usage: $(basename $0) [options]... <build-context> <image-name> <base-image> <layers>..."
+  echo
+  echo "Positional arguments:"
+  echo
+  echo "build-context               Working directory where docker will build the images."
+  echo "image-name                  Tag name of the output image."
+  echo "base-image                  Name of the root image on which the layers will be applied."
+  echo "layers                      Paths to the layers to be applied."
+  echo
+  echo "Named arguments:"
+  echo
+  echo "--tags                      Space separated list of tags to add to the output image."
+  echo "--labels                    Space separated list of labels to add to the output image."
+  echo "--push                      Push the images to the registry."
+  echo "--cache-name                Name of the cache image."
+  echo
 }
 
-check $BASE_IMAGE
-check $LAYERS
-check $IMAGE_NAME
+BUILD_CONTEXT=""
+IMAGE_NAME=""
+BASE_IMAGE=""
+LAYERS=()
+TAGS=()
+LABELS=()
+PUSH=false
+CACHE_NAME=""
+
+while (($#)); do
+  case $1 in
+  --tags)
+    while [[ "$#" -ge 2 && "$2" != -* ]]; do
+      TAGS+=("$2")
+      shift
+    done
+    ;;
+  --labels)
+    while [[ "$#" -ge 2 && "$2" != -* ]]; do
+      LABELS+=("$2")
+      shift
+    done
+    ;;
+  --push)
+    PUSH=true
+    ;;
+  --cache-name)
+    if [[ $2 != -* ]]; then
+      CACHE_NAME="$2"
+      shift
+    fi
+    ;;
+  --) ;;
+  -*)
+    echo
+    echo "Unknown option: $1"
+    usage
+    exit 1
+    ;;
+  *)
+    POSITIONAL_ARGS+=("$1")
+    ;;
+  esac
+  shift
+done
+
+if [ "${#POSITIONAL_ARGS[@]}" -lt 4 ]; then
+  echo "Not enough arguments provided."
+  exit 1
+fi
+
+BUILD_CONTEXT="${POSITIONAL_ARGS[0]}"
+BASE_IMAGE="${POSITIONAL_ARGS[1]}"
+IMAGE_NAME="${POSITIONAL_ARGS[2]}"
+LAYERS="${POSITIONAL_ARGS[@]:3}"
 
 echo
-echo "Base image:         $BASE_IMAGE"
+echo "Build context:      $BUILD_CONTEXT"
 echo "Image name:         $IMAGE_NAME"
+echo "Base image:         $BASE_IMAGE"
 echo "Layers:             ${LAYERS[@]}"
-echo "Image tags:         ${IMAGE_TAGS[@]}"
-echo "Image labels:       ${IMAGE_LABELS[@]}"
-echo "Use buildx:         ${USE_BUILDX}"
+echo "Tags:               ${TAGS[@]}"
+echo "Labels:             ${LABELS[@]}"
 echo "Push to registry:   ${PUSH}"
-echo "Cache source:       ${CACHE_FROM}"
-echo "Cache destination:  ${CACHE_TO}"
+echo "Cache name:         ${CACHE_NAME}"
+echo
+
+push_image() {
+  docker push $1 1>/dev/null
+}
+
+tag="$BASE_IMAGE"
 
 for layer in ${LAYERS[@]}; do
-  file="$LAYERS_PATH/$layer.Dockerfile"
+  file="$BUILD_CONTEXT/$layer/Dockerfile"
+  checksum=$(echo -n $tag $layer | sha1sum | head -c 8)
+  last_tag="$tag"
+  tag="${CACHE_NAME:-$IMAGE_NAME-build}:$checksum"
 
-  if [ -z $last_tag ]; then
-    last_tag=$BASE_IMAGE
-  fi
-
-  if [ "$layer" = "${LAYERS[-1]}" ]; then
-    # if this is the final image insert the proper tags
-    tags=(${IMAGE_TAGS[@]/#/$IMAGE_NAME:})
-  else
-    # otherwise tag with the hash of the applied layers
-    checksum=$(echo -n $last_tag $layer | sha1sum | head -c 8)
-    tags=("$IMAGE_NAME-build:$checksum")
-  fi
-
-  echo
   echo "Adding layer '$layer' to '$last_tag'."
-  echo
 
   args=(
-    "$ROOT_PATH"
-    "--file=$file"
-    "--build-arg=BASE_IMAGE=$last_tag"
-    "${IMAGE_LABELS[@]/#/--label=}"
-    "${tags[@]/#/--tag=}"
+    "$BUILD_CONTEXT" "--file=$file" "--build-arg=BASE_IMAGE=$last_tag" "--tag=$tag" "--cache-from=$tag"
   )
 
-  if [ "$USE_BUILDX" = true ]; then
-    build_cmd="docker buildx build"
-    args+=(
-      "--cache-from=$CACHE_FROM"
-      "--cache-to=$CACHE_TO"
-      "--push=$PUSH"
-    )
-  else
-    build_cmd="docker build"
+  image_id=$(docker build --quiet ${args[@]})
+  echo "Successfully built '$tag'."
+
+  if ! [ -z $CACHE_NAME ]; then
+    echo "Pushing '$tag' to the registry."
+    push_image "$tag"
   fi
 
-  $build_cmd "${args[@]}"
-
-  last_tag=${tags[0]}
+  echo
 done
+
+tags=(${TAGS[@]/#/$IMAGE_NAME:})
+
+echo "Adding labels and tags to '$tag'."
+image_id=$(echo "FROM $tag" | docker build --quiet - "${LABELS[@]/#/--label=}" "${tags[@]/#/--tag=}")
+echo "Successfully built '${tags[0]}'."
+
+if [ $PUSH = true ]; then
+  for tag in ${tags[@]}; do
+    echo "Pushing '$tag' to registry."
+    push_image "$tag"
+  done
+fi
