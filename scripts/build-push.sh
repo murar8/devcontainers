@@ -19,7 +19,6 @@ function usage() {
   echo '--cache-name      $image-name   Name of the intermediate images.'
   echo "--tags            [ latest ]    Space separated list of tags to add to the output image."
   echo "--labels          [ ]           Space separated list of labels to add to the output image."
-  echo '--build-context   $PWD          Working directory where docker will build the images.'
   echo "--push            false         Push the images to the registry."
   echo
 }
@@ -35,10 +34,6 @@ function parse_parameter() {
 
 while (($#)); do
   case $1 in
-  --build-context)
-    BUILD_CONTEXT="$(parse_parameter $@)"
-    shift 2
-    ;;
   --base-image)
     BASE_IMAGE="$(parse_parameter $@)"
     shift 2
@@ -108,13 +103,9 @@ if [ -z $TAGS ]; then
   TAGS=("latest")
 fi
 
-if [ -z $BUILD_CONTEXT ]; then
-  BUILD_CONTEXT=$PWD
-fi
-
 BASE_IMAGE=$(docker buildx imagetools inspect $BASE_IMAGE | grep -Pom1 '(?<=Name:      ).*')
-
 TAGS=(${TAGS[@]/#/$IMAGE_NAME:})
+BUILD_CONTEXT=$PWD
 
 echo
 echo "Base image:         $BASE_IMAGE"
@@ -128,7 +119,7 @@ echo "Push to registry:   ${PUSH:-false}"
 echo
 
 if [[ $PUSH == true ]]; then
-  docker buildx create --driver docker-container --use --driver-opt network=host
+  BUILDER=$(docker buildx create --driver docker-container --use --driver-opt network=host)
 else
   docker buildx use default
 fi
@@ -139,7 +130,6 @@ for layer in ${LAYERS[@]}; do
 
   file="layers/$layer/Dockerfile"
   base_image="${tags[0]}"
-
   tags=("$CACHE_NAME:$(echo -n $base_image $layer | sha1sum | head -c 8)")
   if [[ $layer == ${LAYERS[-1]} ]]; then tags+=(${TAGS[@]}); fi
 
@@ -158,3 +148,5 @@ for layer in ${LAYERS[@]}; do
   echo "Successfully built '${tags[0]}'."
   echo
 done
+
+docker buildx rm $BUILDER
