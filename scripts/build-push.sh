@@ -101,10 +101,15 @@ for layer in ${LAYERS[@]}; do
   echo "Adding layer '$layer' to '$last_tag'."
 
   args=(
-    "$BUILD_CONTEXT" "--file=$file" "--build-arg=BASE_IMAGE=$last_tag" "--tag=$tag" "--cache-from=$tag"
+    "$BUILD_CONTEXT"
+    "--file=$file"
+    "--build-arg=BASE_IMAGE=$last_tag"
+    "--tag=$tag"
+    "--cache-from=$tag"
   )
 
-  image_id=$(docker build --quiet ${args[@]})
+  docker build --quiet "${args[@]}" "${LABELS[@]/#/--label=}" 1>/dev/null
+
   echo "Successfully built '$tag'."
 
   if ! [ -z $CACHE_NAME ]; then
@@ -117,13 +122,16 @@ done
 
 tags=(${TAGS[@]/#/$IMAGE_NAME:})
 
-echo "Adding labels and tags to '$tag'."
-image_id=$(echo "FROM $tag" | docker build --quiet - "${LABELS[@]/#/--label=}" "${tags[@]/#/--tag=}")
-echo "Successfully built '${tags[0]}'."
+for ptag in ${tags[@]}; do
+  echo "Adding tag '$ptag' to '$tag'."
+  docker tag "$tag" "$ptag"
+done
+
+echo
 
 if [ $PUSH = true ]; then
-  for tag in ${tags[@]}; do
-    echo "Pushing '$tag' to registry."
-    docker push $1 "$tag" 1>/dev/null
+  for ptag in ${tags[@]}; do
+    echo "Pushing '$ptag' to registry."
+    docker push "$ptag" 1>/dev/null
   done
 fi
