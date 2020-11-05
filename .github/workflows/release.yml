@@ -49,7 +49,11 @@ jobs:
           --github-repo="${{ github.repository }}"
 
       - run: >
-          scripts/build-push.sh . "${{ matrix.base }}" "$IMAGE_NAME" ${{ join(matrix.layers, ' ') }}
+          scripts/build-push.sh
+          "${{ github.workspace }}"
+          "${{ matrix.base }}"
+          "$IMAGE_NAME"
+          ${{ join(matrix.layers, ' ') }}
           --tags ${{ steps.create-metadata.outputs.tags }}
           --labels ${{ steps.create-metadata.outputs.labels }}
           --push

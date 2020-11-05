@@ -24,15 +24,6 @@ function usage() {
   echo
 }
 
-BUILD_CONTEXT=""
-IMAGE_NAME=""
-BASE_IMAGE=""
-LAYERS=()
-TAGS=()
-LABELS=()
-PUSH=false
-CACHE_NAME=""
-
 while (($#)); do
   case $1 in
   --tags)
@@ -40,34 +31,42 @@ while (($#)); do
       TAGS+=("$2")
       shift
     done
+    shift
     ;;
   --labels)
     while [[ "$#" -ge 2 && "$2" != -* ]]; do
       LABELS+=("$2")
       shift
     done
+    shift
     ;;
   --push)
     PUSH=true
+    shift
     ;;
   --cache-name)
     if [[ $2 != -* ]]; then
       CACHE_NAME="$2"
       shift
     fi
+    shift
     ;;
-  --) ;;
+  --)
+    shift
+    ;;
   -*)
     echo
     echo "Unknown option: $1"
     usage
     exit 1
+    shift
     ;;
   *)
     POSITIONAL_ARGS+=("$1")
+    shift
     ;;
   esac
-  shift
+
 done
 
 if [ "${#POSITIONAL_ARGS[@]}" -lt 4 ]; then
@@ -91,10 +90,6 @@ echo "Push to registry:   ${PUSH}"
 echo "Cache name:         ${CACHE_NAME}"
 echo
 
-push_image() {
-  docker push $1 1>/dev/null
-}
-
 tag="$BASE_IMAGE"
 
 for layer in ${LAYERS[@]}; do
@@ -114,7 +109,7 @@ for layer in ${LAYERS[@]}; do
 
   if ! [ -z $CACHE_NAME ]; then
     echo "Pushing '$tag' to the registry."
-    push_image "$tag"
+    docker push $1 "$tag" 1>/dev/null
   fi
 
   echo
@@ -129,6 +124,6 @@ echo "Successfully built '${tags[0]}'."
 if [ $PUSH = true ]; then
   for tag in ${tags[@]}; do
     echo "Pushing '$tag' to registry."
-    push_image "$tag"
+    docker push $1 "$tag" 1>/dev/null
   done
 fi
