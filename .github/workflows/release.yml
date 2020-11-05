@@ -4,8 +4,8 @@ on:
   push:
     branches: ["main"]
     tags: ["v*"]
-  schedule:
-    - cron: "*/10 * * * *"
+  # schedule:
+  #   - cron: "*/10 * * * *"
 
 jobs:
   parse-config:
@@ -20,8 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: parse-config
     strategy: { matrix: "${{ fromJson(needs.parse-config.outputs.matrix) }}" }
-    env:
-      IMAGE_NAME: "ghcr.io/${{ github.repository_owner }}/devcontainer-${{ matrix.name }}"
     steps:
       - uses: actions/checkout@v2
 
@@ -54,7 +52,7 @@ jobs:
           scripts/build-push.sh
           "${{ github.workspace }}"
           "${{ matrix.base }}"
-          "$IMAGE_NAME"
+          "ghcr.io/${{ github.repository_owner }}/devcontainer-${{ matrix.name }}"
           ${{ join(matrix.layers, ' ') }}
           --tags ${{ steps.create-metadata.outputs.tags }}
           --labels ${{ steps.create-metadata.outputs.labels }}

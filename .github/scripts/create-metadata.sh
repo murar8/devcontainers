@@ -55,14 +55,12 @@ check $GITHUB_REPOSITORY
 REF=${GITHUB_REF##*/}
 
 if [ $REF == "main" ]; then
-  TAG="nightly"
   VERSION="$GITHUB_SHA"
 else
-  TAG="latest"
   VERSION="$REF"
 fi
 
-echo "::set-output name=tags::\"$TAG\" \"$VERSION\""
+echo "::set-output name=tags::\"latest\" \"$VERSION\""
 
 # ******** labels ********
 
