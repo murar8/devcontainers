@@ -2,26 +2,11 @@
   {
     "name": "ubuntu",
     "base": "ubuntu:latest",
-    "layers": ["layers/common-debian"]
+    "layers": ["common-debian"]
   },
   {
     "name": "docker",
     "base": "ubuntu:latest",
-    "layers": ["layers/common-debian", "layers/docker-debian"]
-  },
-  {
-    "name": "ubuntu-golang",
-    "base": "ubuntu:latest",
-    "layers": ["layers/common-debian", "layers/docker-debian", "layers/go-debian"]
-  },
-  {
-    "name": "docker-golang",
-    "base": "ubuntu:latest",
-    "layers": ["layers/common-debian", "layers/docker-debian", "layers/go-debian"]
-  },
-  {
-    "name": "docker-python",
-    "base": "python:buster",
-    "layers": ["layers/common-debian", "layers/docker-debian"]
+    "layers": ["common-debian", "docker-debian"]
   }
 ]
