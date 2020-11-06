@@ -13,11 +13,7 @@ ARG TARGET_SOCKET="/var/run/docker.sock"
 ARG USERNAME="vscode"
 
 RUN /tmp/build-scripts/run-vscode-script.sh docker-debian.sh master \
-  "${ENABLE_NONROOT_DOCKER}" "${SOURCE_SOCKET}" "${TARGET_SOCKET}" "${USERNAME}" \
-  && export DEBIAN_FRONTEND="noninteractive" \
-  && apt-get autoremove -y \
-  && apt-get clean -y \
-  && rm -rf '/var/lib/apt/lists/*' '/tmp/build-scripts/'
+  "${ENABLE_NONROOT_DOCKER}" "${SOURCE_SOCKET}" "${TARGET_SOCKET}" "${USERNAME}"
 
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
 

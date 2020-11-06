@@ -16,11 +16,7 @@ ARG INSTALL_OH_MYS="false"
 
 
 RUN /tmp/build-scripts/run-vscode-script.sh common-debian.sh master \
-  "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}" \
-  && export DEBIAN_FRONTEND="noninteractive" \
-  && apt-get autoremove -y \
-  && apt-get clean -y \
-  && rm -rf '/var/lib/apt/lists/*' '/tmp/build-scripts/'
+  "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "${INSTALL_OH_MYS}"
 
 # Creates the vscode extensions folder with the correct permissions
 # to make it easier to mount them as voulmes as a non-root user.

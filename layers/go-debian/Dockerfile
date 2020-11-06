@@ -15,8 +15,4 @@ ARG UPDATE_RC="true"
 ARG INSTALL_GO_TOOLS="true"
 
 RUN /tmp/build-scripts/run-vscode-script.sh go-debian.sh master \
-  "${TARGET_GO_VERSION}" "${TARGET_GOROOT}" "${TARGET_GOPATH}" "${USERNAME}" "${UPDATE_RC}" "${INSTALL_GO_TOOLS}" \
-  && export DEBIAN_FRONTEND="noninteractive" \
-  && apt-get autoremove -y \
-  && apt-get clean -y \
-  && rm -rf '/var/lib/apt/lists/*' '/tmp/build-scripts/'
+  "${TARGET_GO_VERSION}" "${TARGET_GOROOT}" "${TARGET_GOPATH}" "${USERNAME}" "${UPDATE_RC}" "${INSTALL_GO_TOOLS}"

@@ -10,8 +10,8 @@
     "layers": ["common-debian", "docker-debian"]
   },
   {
-    "name": "ubuntu-golang",
-    "from": "ubuntu:latest",
+    "name": "golang",
+    "from": "golang:1",
     "layers": ["common-debian", "go-debian"]
   },
   {
@@ -20,13 +20,13 @@
     "layers": ["common-debian", "docker-debian", "go-debian"]
   },
   {
-    "name": "ubuntu-python",
-    "from": "python:buster",
+    "name": "python",
+    "from": "python:3",
     "layers": ["common-debian", "python-debian"]
   },
   {
     "name": "docker-python",
-    "from": "python:buster",
+    "from": "python:3",
     "layers": ["common-debian", "docker-debian", "python-debian"]
   }
 ]
