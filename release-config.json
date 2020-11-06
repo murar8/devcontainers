@@ -16,7 +16,7 @@
   },
   {
     "name": "docker-golang",
-    "from": "ubuntu:latest",
+    "from": "golang:1",
     "layers": ["common-debian", "docker-debian", "go-debian"]
   },
   {
