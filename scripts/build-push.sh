@@ -164,7 +164,7 @@ for layer in ${LAYERS[@]}; do
 
   args=("test" "--quiet" "--image $tag" "--config /structure-tests.yaml")
 
-  docker run --rm -it \
+  docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $PWD/$file:/structure-tests.yaml \
     gcr.io/gcp-runtimes/container-structure-test:v1.6.0 ${args[@]}
