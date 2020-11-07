@@ -1,0 +1,24 @@
+schemaVersion: "2.0.0" # Make sure to test the latest schema version
+
+commandTests:
+  - name: "apt cache is empty"
+    command: "bash"
+    args: ["-c", "ls -A /var/lib/apt/lists | wc -L"]
+    expectedOutput: ['^0\s$']
+
+  - name: "vscode user exists"
+    command: "cut"
+    args: ["-d:", "-f1,3,4", "/etc/passwd"]
+    expectedOutput: ["vscode:1000:1000"]
+
+  - name: "zsh is installed"
+    command: "zsh"
+    args: ["--version"]
+    expectedOutput: ['zsh \d+\.\d+']
+
+fileExistenceTests:
+  - name: "vscode server extensions folder"
+    path: "/home/vscode/.vscode-server/extensions"
+    shouldExist: true
+    uid: 1000
+    gid: 1000

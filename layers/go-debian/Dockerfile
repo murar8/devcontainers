@@ -4,13 +4,13 @@ FROM ${BASE_IMAGE}
 
 COPY ./build-scripts/ /tmp/build-scripts/
 
-# Installs a set of common command line utilities, Oh My Bash!, Oh My Zsh!, and sets up a non-root user.
-# See https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/common.md
+# Installs Go and common Go utilities. Auto-detects latest version and installs needed dependencies.
+# See https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/go.md
 
 ARG TARGET_GO_VERSION="latest"
 ARG TARGET_GOROOT="/usr/local/go"
 ARG TARGET_GOPATH="/go"
-ARG USERNAME="vscode"
+ARG USERNAME="automatic"
 ARG UPDATE_RC="true"
 ARG INSTALL_GO_TOOLS="true"
 

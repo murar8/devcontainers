@@ -10,7 +10,7 @@ COPY ./build-scripts/ /tmp/build-scripts/
 ARG ENABLE_NONROOT_DOCKER="true"
 ARG SOURCE_SOCKET="/var/run/docker-host.sock"
 ARG TARGET_SOCKET="/var/run/docker.sock"
-ARG USERNAME="vscode"
+ARG USERNAME="automatic"
 
 RUN /tmp/build-scripts/run-vscode-script.sh docker-debian.sh master \
   "${ENABLE_NONROOT_DOCKER}" "${SOURCE_SOCKET}" "${TARGET_SOCKET}" "${USERNAME}"

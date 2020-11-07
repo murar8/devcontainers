@@ -38,8 +38,9 @@ SCRIPT_URL="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${
 
 curl -fsSL $SCRIPT_URL | bash -s - $SCRIPT_ARGS
 
-if [ -d "/var/lib/apt/lists" ]; then
+if [ "$(ls -A /var/lib/apt/lists)" ]; then
+  echo "Cleaning up apt cache..."
   apt-get autoremove -y
   apt-get clean -y
-  rm -rf '/var/lib/apt/lists/*'
+  rm -rf /var/lib/apt/lists/*
 fi

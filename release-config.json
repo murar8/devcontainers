@@ -11,12 +11,12 @@
   },
   {
     "name": "golang",
-    "from": "golang:1",
+    "from": "ubuntu:latest",
     "layers": ["common-debian", "go-debian"]
   },
   {
     "name": "docker-golang",
-    "from": "golang:1",
+    "from": "ubuntu:latest",
     "layers": ["common-debian", "docker-debian", "go-debian"]
   },
   {

@@ -1,0 +1,7 @@
+schemaVersion: "2.0.0" # Make sure to test the latest schema version
+
+commandTests:
+  - name: "python is installed"
+    command: "python"
+    args: ["--version"]
+    expectedOutput: ['Python 3.\d+.\d+']

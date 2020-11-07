@@ -1,0 +1,7 @@
+schemaVersion: "2.0.0" # Make sure to test the latest schema version
+
+commandTests:
+  - name: "docker is installed"
+    command: "docker"
+    args: ["--version"]
+    expectedOutput: ['Docker version \d+\.\d+\.\d+']

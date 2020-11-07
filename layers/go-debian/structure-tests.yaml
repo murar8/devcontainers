@@ -1,0 +1,7 @@
+schemaVersion: "2.0.0" # Make sure to test the latest schema version
+
+commandTests:
+  - name: "go is installed"
+    command: "/usr/local/go/bin/go"
+    args: ["version"]
+    expectedOutput: ["go version go1"]

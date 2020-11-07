@@ -118,35 +118,59 @@ echo "Build context:      $BUILD_CONTEXT"
 echo "Push to registry:   ${PUSH:-false}"
 echo
 
-if [[ $PUSH == true ]]; then
-  BUILDER=$(docker buildx create --driver docker-container --use --driver-opt network=host)
-else
-  docker buildx use default
-fi
+# BUILDER=$(docker buildx create --driver docker-container --use --driver-opt network=host)
+docker buildx use default
 
-tags=("$BASE_IMAGE") # The tags of the parent image.
+tag="$BASE_IMAGE" # The tag of the parent image.
 
 for layer in ${LAYERS[@]}; do
 
   file="layers/$layer/Dockerfile"
-  base_image="${tags[0]}"
-  tags=("$CACHE_NAME:$(echo -n $base_image $layer | sha1sum | head -c 8)")
-  if [[ $layer == ${LAYERS[-1]} ]]; then tags+=(${TAGS[@]}); fi
+  base_image="$tag"
+  tag="$CACHE_NAME:$(echo -n $base_image $layer | sha1sum | head -c 8)"
 
   echo "Adding layer '$layer' to '$base_image'."
   echo
 
-  args=("$BUILD_CONTEXT" "--file=$file" "--build-arg=BASE_IMAGE=$base_image" "--output=type=image")
+  args=(
+    "$BUILD_CONTEXT"
+    "--file=$file"
+    "--build-arg=BASE_IMAGE=$base_image"
+    "--tag=$tag"
+    "--cache-from=$tag"
+    "--cache-to=type=inline"
+    "--output=type=image"
+    "--progress=plain"
+  )
 
-  if [[ $PUSH == true ]]; then
-    args+=("--cache-from=${tags[0]}" "--cache-to=type=inline" "--push")
-  fi
-
-  docker buildx build --progress plain "${args[@]}" "${LABELS[@]/#/--label=}" "${tags[@]/#/--tag=}"
+  docker buildx build "${args[@]}" "${LABELS[@]/#/--label=}"
 
   echo
-  echo "Successfully built '${tags[0]}'."
+  echo "Successfully built '$tag'."
   echo
+
+  if [[ $PUSH == true ]]; then docker push $tag; fi
 done
 
-docker buildx rm $BUILDER
+for layer in ${LAYERS[@]}; do
+  file="layers/$layer/structure-tests.yaml"
+
+  if [ ! -f $file ]; then
+    echo "No test file found for layer $layer."
+    continue
+  fi
+
+  echo "Executing tests for layer $layer."
+
+  args=("test" "--quiet" "--image $tag" "--config /structure-tests.yaml")
+
+  docker run --rm -it \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v $PWD/$file:/structure-tests.yaml \
+    gcr.io/gcp-runtimes/container-structure-test:v1.6.0 ${args[@]}
+done
+
+for otag in $TAGS; do
+  docker tag $tag $otag
+  if [[ $PUSH == true ]]; then docker push $otag; fi
+done

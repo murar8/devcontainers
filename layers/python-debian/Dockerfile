@@ -8,9 +8,9 @@ COPY ./build-scripts/ /tmp/build-scripts/
 # https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/python.md
 
 ARG PYTHON_VERSION="none"
-ARG PYTHON_INSTALL_PATH="/usr/local/python${PYTHON_VERSION}"
+ARG PYTHON_INSTALL_PATH=""
 ARG PIPX_HOME="/usr/local/py-utils"
-ARG USERNAME="vscode"
+ARG USERNAME="automatic"
 ARG UPDATE_RC="true"
 ARG INSTALL_PYTHON_TOOLS="true"
 
