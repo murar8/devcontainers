@@ -13,6 +13,7 @@ jobs:
     outputs: { matrix: "${{ steps.read-config.outputs.matrix }}" }
     steps:
       - uses: actions/checkout@v2
+
       - id: read-config
         run: 'echo ::set-output name=matrix::\{ \"include\": $(cat release-config.json) \}'
 
