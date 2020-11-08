@@ -116,7 +116,6 @@ echo "Tags:               ${TAGS[@]}"
 echo "Labels:             ${LABELS[@]}"
 echo "Build context:      $BUILD_CONTEXT"
 echo "Push to registry:   ${PUSH:-false}"
-echo
 
 # BUILDER=$(docker buildx create --driver docker-container --use --driver-opt network=host)
 docker buildx use default
@@ -129,6 +128,7 @@ for layer in ${LAYERS[@]}; do
   base_image="$tag"
   tag="$CACHE_NAME:$(echo -n $base_image $layer | sha1sum | head -c 8)"
 
+  echo
   echo "Adding layer '$layer' to '$base_image'."
   echo
 
@@ -145,22 +145,29 @@ for layer in ${LAYERS[@]}; do
 
   docker buildx build "${args[@]}" "${LABELS[@]/#/--label=}"
 
-  echo
-  echo "Successfully built '$tag'."
-  echo
+  if [[ $PUSH == true ]]; then
+    echo
+    echo "Pushing $tag to the docker registry."
+    echo
 
-  if [[ $PUSH == true ]]; then docker push $tag; fi
+    docker push $tag
+  fi
+
 done
 
 for layer in ${LAYERS[@]}; do
   file="layers/$layer/structure-tests.yaml"
 
   if [ ! -f $file ]; then
-    echo "No test file found for layer $layer."
+    echo
+    echo "No test file found for layer $layer." 1>&2
+    echo
     continue
   fi
 
+  echo
   echo "Executing tests for layer $layer."
+  echo
 
   args=("test" "--quiet" "--image $tag" "--config /structure-tests.yaml")
 
@@ -171,6 +178,17 @@ for layer in ${LAYERS[@]}; do
 done
 
 for otag in $TAGS; do
+  echo
+  echo "Tagging $tag with $otag."
+  echo
+
   docker tag $tag $otag
-  if [[ $PUSH == true ]]; then docker push $otag; fi
+
+  if [[ $PUSH == true ]]; then
+    echo
+    echo "Pushing $otag to the docker registry."
+    echo
+
+    docker push $otag
+  fi
 done
