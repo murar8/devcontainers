@@ -137,6 +137,14 @@ To use this image add the following to `devcontainer.json`:
 
 For more information see https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/python.md
 
+### rust-debian
+
+**Only for debian based base images.**
+
+- Rust preinstalled.
+
+For more information see https://github.com/microsoft/vscode-dev-containers/blob/master/script-library/docs/rust.md
+
 ## Adding a new image definition
 
 Base Image vs Image: TODO
