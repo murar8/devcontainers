@@ -5,7 +5,7 @@ on:
     branches: ["main"]
     tags: ["v*"]
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 3 * * *"
 
 jobs:
   parse-config:
