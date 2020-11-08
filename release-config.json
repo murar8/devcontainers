@@ -28,5 +28,15 @@
     "name": "docker-python",
     "from": "python:3",
     "layers": ["common-debian", "docker-debian", "python-debian"]
+  },
+  {
+    "name": "rust",
+    "from": "rust:1",
+    "layers": ["common-debian", "rust-debian"]
+  },
+  {
+    "name": "docker-rust",
+    "from": "rust:1",
+    "layers": ["common-debian", "docker-debian", "rust-debian"]
   }
 ]

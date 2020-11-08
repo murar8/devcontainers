@@ -1,0 +1,20 @@
+{
+  "image": "ghcr.io/murar8/devcontainer-docker:latest",
+
+  "runArgs": ["--init"],
+
+  "overrideCommand": false,
+
+  "mounts": [
+    "source=ubuntu-vscode-extensions,target=/home/vscode/.vscode-server/extensions,type=volume",
+    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"
+  ],
+
+  "remoteUser": "vscode",
+
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
+
+  "extensions": ["ms-azuretools.vscode-docker"]
+}

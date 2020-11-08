@@ -1,0 +1,11 @@
+schemaVersion: "2.0.0" # Make sure to test the latest schema version
+
+commandTests:
+  - name: "rustc is installed"
+    command: "rustc"
+    args: ["--version"]
+    expectedOutput: ['rustc 1.\d+.\d+']
+  - name: "rustup is installed"
+    command: "rustup"
+    args: ["--version"]
+    expectedOutput: ['rustup 1.\d+.\d+']
